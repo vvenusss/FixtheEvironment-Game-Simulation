@@ -8,6 +8,11 @@ public class CityScreen extends SkyScreen {
 
     private ShapeRenderer cityRenderer;
 
+    // Dynamic layout
+    private float groundHeight;
+    private float[] buildingX, buildingY, buildingW, buildingH;
+    private float[] lampX;
+
     public CityScreen(GameMaster gameMaster) {
         super(gameMaster);
     }
@@ -16,71 +21,85 @@ public class CityScreen extends SkyScreen {
     public void onLoad() {
         super.onLoad();
         cityRenderer = new ShapeRenderer();
+        calculateLayout(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         System.out.println("CityScreen loaded.");
     }
 
     @Override
-    public void render() {
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        calculateLayout(width, height);
+    }
 
+    private void calculateLayout(float w, float h) {
+        groundHeight = h * 0.15f;
+
+        buildingX = new float[]{ w * 0.05f, w * 0.25f, w * 0.45f, w * 0.68f };
+        buildingW = new float[]{ w * 0.14f, w * 0.12f, w * 0.18f, w * 0.14f };
+        buildingH = new float[]{ h * 0.55f, h * 0.65f, h * 0.60f, h * 0.50f };
+        buildingY = new float[]{ groundHeight, groundHeight, groundHeight, groundHeight };
+        lampX     = new float[]{ w * 0.04f, w * 0.42f, w * 0.76f };
+    }
+
+    @Override
+    public void render() {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
         renderSky();
         backClouds(h);
 
+        cityRenderer.setProjectionMatrix(camera.combined);
         cityRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-
-        //ground
+        // Ground
         cityRenderer.setColor(0.1f, 0.1f, 0.1f, 1f);
-        cityRenderer.rect(0, 0, w, 120);
+        cityRenderer.rect(0, 0, w, groundHeight);
 
-        //buildings
-        drawBuilding(80, 120, 120, 320);
-        drawBuilding(230, 120, 100, 400);
-        drawBuilding(360, 120, 150, 350);
-        drawBuilding(540, 120, 110, 280);
+        // Buildings
+        for (int i = 0; i < 4; i++) {
+            drawBuilding(buildingX[i], buildingY[i], buildingW[i], buildingH[i]);
+        }
 
-        drawLampPost(60, 120);
-        drawLampPost(350, 120);
-        drawLampPost(580, 120);
+        // Lamp posts
+        for (float lx : lampX) {
+            drawLampPost(lx, groundHeight, h);
+        }
 
         cityRenderer.end();
 
         frontClouds(h);
-
-        // Render gameplay objects + UI
         super.render();
     }
 
     private void drawBuilding(float x, float y, float width, float height) {
-
-        //building
         cityRenderer.setColor(Color.DARK_GRAY);
         cityRenderer.rect(x, y, width, height);
 
-        //windows
-        cityRenderer.setColor(Color.YELLOW);
+        float winW = width  * 0.15f;
+        float winH = height * 0.06f;
+        float gapX = width  * 0.22f;
+        float gapY = height * 0.08f;
 
-        for (float wx = x + 10; wx < x + width - 10; wx += 25) {
-            for (float wy = y + 20; wy < y + height - 20; wy += 35) {
-                cityRenderer.rect(wx, wy, 12, 18);
+        cityRenderer.setColor(Color.YELLOW);
+        for (float wx = x + width * 0.10f; wx < x + width - winW; wx += gapX) {
+            for (float wy = y + height * 0.05f; wy < y + height - winH; wy += gapY) {
+                cityRenderer.rect(wx, wy, winW, winH);
             }
         }
     }
 
-    private void drawLampPost(float x, float y) {
+    private void drawLampPost(float x, float y, float h) {
+        float poleH  = h * 0.12f;
+        float poleW  = h * 0.008f;
+        float armLen = h * 0.03f;
 
-        //pole
         cityRenderer.setColor(Color.BLACK);
-        cityRenderer.rect(x, y, 6, 90);
+        cityRenderer.rect(x, y, poleW, poleH);
+        cityRenderer.rect(x + poleW, y + poleH * 0.88f, armLen, poleW);
 
-        //arm
-        cityRenderer.rect(x + 6, y + 80, 20, 4);
-
-        //lamp light
         cityRenderer.setColor(Color.YELLOW);
-        cityRenderer.circle(x + 28, y + 82, 6);
+        cityRenderer.circle(x + poleW + armLen, y + poleH * 0.89f, poleW * 1.5f);
     }
 
     @Override

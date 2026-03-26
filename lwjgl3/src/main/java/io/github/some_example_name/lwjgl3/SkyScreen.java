@@ -87,6 +87,7 @@ public class SkyScreen extends ActivityScreen {
     }
 
     protected void backClouds(float h){
+        skyRenderer.setProjectionMatrix(camera.combined);
 
         skyRenderer.begin(ShapeRenderer.ShapeType.Filled);
         //cloud1x
@@ -98,6 +99,7 @@ public class SkyScreen extends ActivityScreen {
     }
 
     protected void frontClouds(float h){
+        skyRenderer.setProjectionMatrix(camera.combined);
         skyRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         //cloud3x
@@ -113,6 +115,7 @@ public class SkyScreen extends ActivityScreen {
         float h = Gdx.graphics.getHeight();
 
         Color sky = getCurrentSkyColor();
+        skyRenderer.setProjectionMatrix(camera.combined);
 
         skyRenderer.begin(ShapeRenderer.ShapeType.Filled);
 

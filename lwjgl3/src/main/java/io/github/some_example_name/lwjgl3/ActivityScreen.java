@@ -41,7 +41,8 @@ public class ActivityScreen extends Screen {
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
 	private BitmapFont font;
-	private OrthographicCamera camera;
+
+	protected OrthographicCamera camera;
 
 	// ── Game entities ─────────────────────────────────────────────────────────
 
@@ -122,7 +123,9 @@ public class ActivityScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
+
         camera.setToOrtho(false, width, height);
+        batch.setProjectionMatrix(camera.combined);
     }
 
 	@Override
@@ -214,7 +217,8 @@ public class ActivityScreen extends Screen {
 		entityManager.drawAll(batch, shapeRenderer);
 
 		// ── HUD bar ───────────────────────────────────────────────────────────
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		pollutionBar.renderBar(shapeRenderer, gameMaster.getBackgroundManager(), screenH);
 		shapeRenderer.end();
 

@@ -175,6 +175,8 @@ public class FallingObjectSpawner {
             } else if (alreadyBounced && upMovement.hasExitedTop(obj, screenH)) {
                 if (!(obj instanceof GreenSolution)) {
                     applyBadBounceExitTop();
+                } else{
+                    bgManager.increasePollution(POLLUTION_BOTTOM_GOOD);
                 }
                 toRemove.add(obj);
 
