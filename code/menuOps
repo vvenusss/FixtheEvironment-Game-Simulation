@@ -1,0 +1,9 @@
+public class implements Menu{
+
+    public void menuInterface(){
+        System.out.println("Please choose from the following:");
+        System.out.println("1. Add item");
+        System.out.println("2. View Inventory");
+        System.out.println("3. Exit");
+    }
+}
